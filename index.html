@@ -11,7 +11,8 @@
         body {
             margin: 0; padding: 0;
             font-family: 'Montserrat', sans-serif;
-            background: url('images/bg.jpg') no-repeat center center fixed;
+            /* កែមកទាញយករូប bg.jpg ដែលនៅជិត index ផ្ទាល់ */
+            background: url('bg.jpg') no-repeat center center fixed;
             background-size: cover;
             color: #fff;
             display: flex;
@@ -27,7 +28,6 @@
             z-index: -1;
         }
 
-        /* ផ្ទាំង Users Online តូចនៅជ្រុងខាងឆ្វេងក្រោម */
         .online-badge {
             position: fixed;
             bottom: 20px;
@@ -53,10 +53,9 @@
         }
         @keyframes blink { from { opacity: 0.4; } to { opacity: 1; } }
 
-        /* Notification Container (នៅពីលើ Users Online) */
         .notification-container {
             position: fixed;
-            bottom: 60px; /* រុញឱ្យនៅពីលើប្រអប់ Online ខាងក្រោម */
+            bottom: 60px;
             left: 20px;
             display: flex;
             flex-direction: column-reverse;
@@ -83,7 +82,6 @@
         @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
-        /* Main Card */
         .generator-card {
             background: rgba(21, 30, 50, 0.9);
             border: 2px solid #2a3b5c;
@@ -125,7 +123,6 @@
         }
         .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(211, 84, 0, 0.6); }
 
-        /* Terminal Processing */
         .terminal {
             background: #050810; border-radius: 10px; padding: 18px; height: 160px;
             overflow: hidden; text-align: left; font-family: 'Share Tech Mono', monospace;
@@ -133,7 +130,6 @@
             border: 1px solid #00ffcc; box-shadow: inset 0 0 15px rgba(0, 255, 204, 0.1);
         }
 
-        /* Modal Verification */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center;
@@ -148,7 +144,6 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.04); } 100% { transform: scale(1); } }
         
-        /* Footer */
         footer { margin-top: auto; margin-bottom: 20px; padding-top: 40px; text-align: center; font-size: 12px; color: #7a8b9e; }
         footer a { color: #7a8b9e; text-decoration: none; margin: 0 10px; font-weight: 600; }
         footer a:hover { color: #00ffcc; }
@@ -159,10 +154,8 @@
 
     <div class="overlay"></div>
 
-    <!-- Notification Container (លោតផ្ទាំងឈ្មោះអ្នកបានរង្វាន់) -->
     <div class="notification-container" id="notif-container"></div>
 
-    <!-- Users Online Badge (តូចមួយនៅខាងក្រោម) -->
     <div class="online-badge">
         <div class="pulse-dot"></div> <span id="online">1,245</span> Users Online
     </div>
@@ -195,7 +188,8 @@
         <p>Connected to: <b style="color: #00ffcc;" id="show-user"></b></p>
         
         <div class="input-group">
-            <label><img src="images/coin.png" class="icon-img" alt="Coin"> Select Coins</label>
+            <!-- កែមកទាញយករូប coin.png ផ្ទាល់ -->
+            <label><img src="coin.png" class="icon-img" alt="Coin"> Select Coins</label>
             <select id="coins">
                 <option>10,000,000 Coins</option>
                 <option selected>25,000,000 Coins</option>
@@ -203,7 +197,8 @@
             </select>
         </div>
         <div class="input-group">
-            <label><img src="images/spin.png" class="icon-img" alt="Spin"> Select Spins</label>
+            <!-- កែមកទាញយករូប spin.png ផ្ទាល់ -->
+            <label><img src="spin.png" class="icon-img" alt="Spin"> Select Spins</label>
             <select id="spins">
                 <option>5,000 Spins</option>
                 <option selected>15,000 Spins</option>
@@ -243,13 +238,11 @@
     <script>
         const CPA_LINK = "https://coinmasterdailycoinspins.blogspot.com/";
 
-        // កូដបញ្ឆោតអ្នក Online ខាងក្រោម
         setInterval(() => {
             let current = parseInt(document.getElementById('online').innerText.replace(',', ''));
             document.getElementById('online').innerText = (current + Math.floor(Math.random() * 14 - 6)).toLocaleString();
         }, 3500);
 
-        // ប្តូរឈ្មោះអ្នកទទួលបានរង្វាន់ទៅជាឈ្មោះបរទេសសុទ្ធ
         const names = ["JohnDoe99", "Sarah_Gamer", "Mike_Pro", "Emily_Hunter", "Chris_King", "Jessica_B", "David_Alpha", "Ashley_G", "Tom_Master"];
         const fakeRewards = ["15,000 Spins", "50,000 Spins", "25,000,000 Coins", "50,000,000 Coins"];
         const notifContainer = document.getElementById('notif-container');

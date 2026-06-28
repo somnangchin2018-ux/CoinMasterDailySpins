@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coin Master Daily Spins & Coins</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: url('images/bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 16, 30, 0.75);
+            z-index: -1;
+        }
+
+        /* ផ្ទាំង Users Online តូចនៅជ្រុងខាងឆ្វេងក្រោម */
+        .online-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(20, 28, 48, 0.95);
+            padding: 8px 15px;
+            border-radius: 6px;
+            border-left: 3px solid #ff3333;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ff3333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 110;
+            backdrop-filter: blur(5px);
+        }
+
+        .pulse-dot {
+            width: 6px; height: 6px; background-color: #ff3333; border-radius: 50%;
+            box-shadow: 0 0 8px #ff3333; animation: blink 1s infinite alternate;
+        }
+        @keyframes blink { from { opacity: 0.4; } to { opacity: 1; } }
+
+        /* Notification Container (នៅពីលើ Users Online) */
+        .notification-container {
+            position: fixed;
+            bottom: 60px; /* រុញឱ្យនៅពីលើប្រអប់ Online ខាងក្រោម */
+            left: 20px;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 10px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .notify-item {
+            background: rgba(20, 28, 48, 0.95);
+            padding: 10px 15px;
+            border-left: 4px solid #f1c40f;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            animation: slideIn 0.4s ease-out forwards, fadeOut 0.5s ease-in 4s forwards;
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+
+        @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
+
+        /* Main Card */
+        .generator-card {
+            background: rgba(21, 30, 50, 0.9);
+            border: 2px solid #2a3b5c;
+            border-radius: 16px;
+            padding: 35px 25px;
+            width: 90%;
+            max-width: 420px;
+            margin-top: 50px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        h2 { 
+            color: #f1c40f; margin-top: 0; font-weight: 900; 
+            letter-spacing: 1px; font-size: 22px; line-height: 1.4;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        p { color: #d0d8e0; font-size: 14px; margin-bottom: 25px; font-weight: 500; }
+
+        .input-group { margin-bottom: 22px; text-align: left; }
+        .input-group label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #00ffcc; margin-bottom: 8px; text-transform: uppercase; }
+        
+        .icon-img { width: 20px; height: 20px; object-fit: contain; }
+        
+        input[type="text"], select {
+            width: 100%; padding: 15px; border-radius: 10px;
+            border: 1px solid #3a4b6c; background: #0d1323; color: #fff;
+            font-size: 15px; font-family: 'Montserrat', sans-serif; font-weight: 600;
+            box-sizing: border-box; outline: none; transition: all 0.3s ease;
+        }
+        input[type="text"]:focus, select:focus { border-color: #00ffcc; box-shadow: 0 0 10px rgba(0, 255, 204, 0.2); }
+        
+        .btn {
+            background: linear-gradient(90deg, #f39c12, #d35400); border: none; border-radius: 10px;
+            color: #fff; font-size: 18px; font-weight: 900; padding: 16px; width: 100%;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 5px 20px rgba(211, 84, 0, 0.4); transition: all 0.3s ease;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(211, 84, 0, 0.6); }
+
+        /* Terminal Processing */
+        .terminal {
+            background: #050810; border-radius: 10px; padding: 18px; height: 160px;
+            overflow: hidden; text-align: left; font-family: 'Share Tech Mono', monospace;
+            color: #00ffcc; font-size: 15px; line-height: 1.6;
+            border: 1px solid #00ffcc; box-shadow: inset 0 0 15px rgba(0, 255, 204, 0.1);
+        }
+
+        /* Modal Verification */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: #1a2235; padding: 35px 25px; border-radius: 16px; text-align: center;
+            width: 90%; max-width: 380px; border: 2px solid #f1c40f; box-shadow: 0 0 30px rgba(241, 196, 15, 0.2);
+        }
+        .verify-btn {
+            background: linear-gradient(90deg, #2ecc71, #27ae60); margin-top: 25px;
+            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.4); animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.04); } 100% { transform: scale(1); } }
+        
+        /* Footer */
+        footer { margin-top: auto; margin-bottom: 20px; padding-top: 40px; text-align: center; font-size: 12px; color: #7a8b9e; }
+        footer a { color: #7a8b9e; text-decoration: none; margin: 0 10px; font-weight: 600; }
+        footer a:hover { color: #00ffcc; }
+        .footer-divider { color: #3a4b6c; }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+
+    <!-- Notification Container (លោតផ្ទាំងឈ្មោះអ្នកបានរង្វាន់) -->
+    <div class="notification-container" id="notif-container"></div>
+
+    <!-- Users Online Badge (តូចមួយនៅខាងក្រោម) -->
+    <div class="online-badge">
+        <div class="pulse-dot"></div> <span id="online">1,245</span> Users Online
+    </div>
+
+    <!-- Step 1: Username & Device -->
+    <div class="generator-card" id="step1">
+        <h2>COIN MASTER DAILY SPINS & COINS</h2>
+        <p>Enter your Game Username and select your device.</p>
+        
+        <div class="input-group">
+            <label><i class="fa-solid fa-user"></i> Username / ID</label>
+            <input type="text" id="username" placeholder="Type your username here...">
+        </div>
+        
+        <div class="input-group">
+            <label><i class="fa-solid fa-mobile-screen"></i> Device Platform</label>
+            <select id="device">
+                <option value="Android">Android</option>
+                <option value="iOS">iOS / iPhone</option>
+                <option value="PC">PC / Emulator</option>
+            </select>
+        </div>
+
+        <button class="btn" onclick="nextStep()">CONNECT ACCOUNT</button>
+    </div>
+
+    <!-- Step 2: Select Resources -->
+    <div class="generator-card" id="step2" style="display: none;">
+        <h2>SELECT REWARDS</h2>
+        <p>Connected to: <b style="color: #00ffcc;" id="show-user"></b></p>
+        
+        <div class="input-group">
+            <label><img src="images/coin.png" class="icon-img" alt="Coin"> Select Coins</label>
+            <select id="coins">
+                <option>10,000,000 Coins</option>
+                <option selected>25,000,000 Coins</option>
+                <option>50,000,000 Coins</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label><img src="images/spin.png" class="icon-img" alt="Spin"> Select Spins</label>
+            <select id="spins">
+                <option>5,000 Spins</option>
+                <option selected>15,000 Spins</option>
+                <option>50,000 Spins</option>
+            </select>
+        </div>
+        <button class="btn" onclick="startHack()">GENERATE NOW</button>
+    </div>
+
+    <!-- Step 3: Terminal Processing -->
+    <div class="generator-card" id="step3" style="display: none;">
+        <h2 style="color: #00ffcc;">SYSTEM PROCESSING...</h2>
+        <div class="terminal" id="terminal">
+            > Initializing secure protocol...<br>
+        </div>
+    </div>
+
+    <!-- Step 4: CPA Verification -->
+    <div class="modal" id="step4">
+        <div class="modal-content">
+            <h2 style="color: #f1c40f; margin-bottom: 15px; font-size: 26px;">🏆 Congratulations!</h2>
+            <p style="color: #fff; font-size: 16px; font-weight: 700; margin-bottom: 15px;">Your reward has been prepared successfully.</p>
+            <p style="font-size: 14px; color: #b0b8c8; line-height: 1.6;">Complete one quick offer below to verify your request and unlock your reward. Once verified, your reward will be available instantly.</p>
+            <button class="btn verify-btn" onclick="verifyCPA()">CLAIM NOW</button>
+        </div>
+    </div>
+
+    <!-- Footer Links -->
+    <footer>
+        <a href="#">About Us</a> <span class="footer-divider">|</span> 
+        <a href="#">Terms & Conditions</a> <span class="footer-divider">|</span> 
+        <a href="#">Privacy Policy</a>
+        <br><br>
+        &copy; 2026 Daily Rewards. All rights reserved.
+    </footer>
+
+    <script>
+        const CPA_LINK = "https://coinmasterdailycoinspins.blogspot.com/";
+
+        // កូដបញ្ឆោតអ្នក Online ខាងក្រោម
+        setInterval(() => {
+            let current = parseInt(document.getElementById('online').innerText.replace(',', ''));
+            document.getElementById('online').innerText = (current + Math.floor(Math.random() * 14 - 6)).toLocaleString();
+        }, 3500);
+
+        // ប្តូរឈ្មោះអ្នកទទួលបានរង្វាន់ទៅជាឈ្មោះបរទេសសុទ្ធ
+        const names = ["JohnDoe99", "Sarah_Gamer", "Mike_Pro", "Emily_Hunter", "Chris_King", "Jessica_B", "David_Alpha", "Ashley_G", "Tom_Master"];
+        const fakeRewards = ["15,000 Spins", "50,000 Spins", "25,000,000 Coins", "50,000,000 Coins"];
+        const notifContainer = document.getElementById('notif-container');
+
+        function createNotification() {
+            if (notifContainer.childElementCount >= 4) {
+                notifContainer.removeChild(notifContainer.firstElementChild);
+            }
+            
+            let rName = names[Math.floor(Math.random() * names.length)];
+            let rReward = fakeRewards[Math.floor(Math.random() * fakeRewards.length)];
+            
+            let notif = document.createElement('div');
+            notif.className = 'notify-item';
+            notif.innerHTML = `✅ <b style="color:#f1c40f;">${rName}</b> successfully claimed ${rReward}!`;
+            
+            notifContainer.appendChild(notif);
+
+            setTimeout(() => {
+                if (notif.parentNode) {
+                    notif.parentNode.removeChild(notif);
+                }
+            }, 4500);
+        }
+
+        setTimeout(createNotification, 500);
+        setInterval(createNotification, 2000); 
+
+        function nextStep() {
+            let user = document.getElementById("username").value;
+            let device = document.getElementById("device").value;
+            if(user === "") { alert("Please enter your username!"); return; }
+            document.getElementById("step1").style.display = "none";
+            document.getElementById("step2").style.display = "block";
+            document.getElementById("show-user").innerText = user + " (" + device + ")";
+        }
+
+        function startHack() {
+            let coins = document.getElementById("coins").value;
+            let spins = document.getElementById("spins").value;
+            document.getElementById("step2").style.display = "none";
+            document.getElementById("step3").style.display = "block";
+            
+            const terminal = document.getElementById("terminal");
+            const msgs = [
+                "> Connecting to " + document.getElementById("device").value + " server...",
+                "> Searching database for user: " + document.getElementById("username").value,
+                "> Status: Account found & connected.",
+                "> Bypassing server firewall...",
+                "> Preparing " + coins + "...",
+                "> Preparing " + spins + "...",
+                "> Finalizing resource synchronization...",
+                "> ERROR: Unusual activity detected!",
+                "> Human Verification Required."
+            ];
+            
+            let i = 0;
+            let intv = setInterval(() => {
+                if(i < msgs.length) {
+                    terminal.innerHTML += msgs[i] + "<br>";
+                    terminal.scrollTop = terminal.scrollHeight;
+                    i++;
+                } else {
+                    clearInterval(intv);
+                    setTimeout(() => {
+                        document.getElementById("step4").style.display = "flex";
+                    }, 1200);
+                }
+            }, 850);
+        }
+
+        function verifyCPA() { window.location.href = CPA_LINK; }
+    </script>
+</body>
+</html>
